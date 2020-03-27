@@ -20,8 +20,8 @@ jobs:
       with:
         dotnet-version: 3.1.101
     - name: Install dependencies
-      run: dotnet restore soln-path
+      run: dotnet restore $soln-path
     - name: Build
-      run: dotnet build soln-path --configuration Release --no-restore
+      run: dotnet build $soln-path --configuration Release --no-restore
     - name: Test
-      run: dotnet test soln-path --no-restore --verbosity normal
+      run: dotnet test $soln-path --no-restore --verbosity normal
