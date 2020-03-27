@@ -1,5 +1,7 @@
 name: .NET Core
-
+env:
+  soln-path: HomeAloneProteinMotifAnalyzer/HomeAloneBackend/HomeAloneBackend.sln
+  
 on:
   push:
     branches: [ master ]
@@ -9,7 +11,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -20,6 +22,6 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build soln-path --configuration Release --no-restore
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test soln-path --no-restore --verbosity normal
