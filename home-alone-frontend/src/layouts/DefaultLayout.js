@@ -1,16 +1,23 @@
 // src/layouts/DefaultLayout.js
 
 import React from 'react'
-import { Container, Column, Row } from 'react-bootstrap'
+import { Container, Row } from 'react-bootstrap'
 import NavBar from '../components/NavBar'
 
 const DefaultLayout = (props) => {
+    const headerSeparator = {
+        height: '30px'
+    }
+
     return (
-        <Container fluid>
+        <>
             <NavBar/>
-            <Row>
+            <Container>
+                <Row style={headerSeparator}></Row>
                 {props.children}
-            </Row>
-        </Container>
+            </Container>
+        </>
     )
 }
+
+export default DefaultLayout
