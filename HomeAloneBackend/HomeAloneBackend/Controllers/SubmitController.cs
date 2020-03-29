@@ -2,7 +2,7 @@
 
 using HomeAloneBackend.Models;
 using HomeAloneBackend.Services;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 
 namespace HomeAloneBackend.Controllers
 {
@@ -18,7 +18,7 @@ namespace HomeAloneBackend.Controllers
         }
 
         // POST: api/Submit
-        [HttpPost]
+        [HttpPost, EnableCors(Startup.MY_CORS_ORIGINS), DisableRequestSizeLimit]
         public void Post([FromForm] ApiDataModel formData)
         {
             _fileUploadService.Save(formData);
