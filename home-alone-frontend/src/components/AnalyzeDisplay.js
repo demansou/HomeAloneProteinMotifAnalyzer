@@ -14,14 +14,14 @@ const AnalyzeDisplay = () => {
             >
             <TableHeaderColumn
                 dataField='name'
-                width={1}
+                width={'33%'}
                 isKey
                 >
                 Name
             </TableHeaderColumn>
             <TableHeaderColumn
                 dataField='data'
-                width={2}
+                width={'66%'}
                 >
                 Sequence
             </TableHeaderColumn>

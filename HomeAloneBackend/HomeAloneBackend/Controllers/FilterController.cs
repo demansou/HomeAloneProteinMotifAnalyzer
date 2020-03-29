@@ -21,11 +21,11 @@ namespace HomeAloneBackend.Controllers
 
         // POST: api/Filter
         [HttpPost]
-        public JsonResult Post([FromBody] ApiFilterModel apiFilterModel)
+        public async Task<JsonResult> Post([FromBody] ApiFilterModel apiFilterModel)
         {
-            var result = _analyzerDbContext.Data
+            var result = await Task.Run(() => _analyzerDbContext.Data
                 .Where(DataModelMeetsFilterCriteria)
-                .ToList();
+                .ToList());
 
             return new JsonResult(result);
 
