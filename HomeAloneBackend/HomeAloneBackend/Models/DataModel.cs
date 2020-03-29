@@ -3,6 +3,7 @@
     public interface IDataModel
     {
         int Id { get; }
+        string Name { get; }
         string Data { get; }
 
         int DataSetId { get; }
@@ -12,6 +13,7 @@
     public sealed class DataModel : IDataModel
     {
         public int Id { get; set; }
+        public string Name { get; set; }
         public string Data { get; set; }
 
         public int DataSetId { get; set; }
