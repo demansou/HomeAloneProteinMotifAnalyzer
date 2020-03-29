@@ -3,34 +3,42 @@
 import React, { useEffect, useState } from 'react'
 import { Row, Col } from 'react-bootstrap'
 import { useParams } from 'react-router-dom'
+import AnalyzeFilter from './AnalyzeFilter'
+import AnalyzeDisplay from './AnalyzeDisplay'
+import AnalyzeContextProvider from '../contexts/AnalyzeContext'
 
 const AnalyzeForm = () => {
-    const { dataSetId } = useParams()
+    const { id } = useParams()
     const [dataSet, setDataSet] = useState(null)
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_URL}/api/DataSetModels/${dataSetId}`)
+        fetch(`${process.env.REACT_APP_API_URL}/api/DataSetModels/${id}`)
             .then(data => data.json())
             .then(json => setDataSet(json))
             .catch(err => {
                 console.log(err)
                 setDataSet(null)
             })
-    }, [dataSetId])
+    }, [id])
 
     return (
-        <>
+        <AnalyzeContextProvider>
             <Row>
                 <Col>
-                    <h2>{dataSet && dataSet.Name ? `Analyze ${dataSet.Name}` : 'Error loading data set...'}</h2>
+                    <h2>{dataSet && dataSet.name ? `Analyze ${dataSet.name}` : 'Error loading data set...'}</h2>
                 </Col>
             </Row>
             <Row>
                 <Col>
-                    {/*TODO DM 03/28/2020 Get the filter component done.*/}
+                    <AnalyzeFilter id={id}/>
                 </Col>
             </Row>
-        </>
+            <Row>
+                <Col>
+                    <AnalyzeDisplay/>
+                </Col>
+            </Row>
+        </AnalyzeContextProvider>
     )
 }
 

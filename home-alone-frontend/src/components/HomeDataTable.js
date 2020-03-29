@@ -7,14 +7,15 @@ import { Table } from 'react-bootstrap'
 const DataSetMapper = ({data}) => {
     return (
         <tr>
-            <td>{data.Name}</td>
-            <td>{data.SequenceType}</td>
+            <td>{data.name}</td>
+            <td>{data.sequenceType}</td>
             <td>
-                <Link to={`/analyze/${data.Id}`}>
+                <Link to={`/analyze/${data.id}`}>
                     Analyze =>
                 </Link>
             </td>
-        </tr>)
+        </tr>
+    )
 }
 
 const DataErrorRow = () => {
@@ -27,17 +28,12 @@ const HomeDataTable = () => {
     const [dataSets, setDataSets] = useState(null)
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_URL}/api/DataSetModel`)
+        fetch(`${process.env.REACT_APP_API_URL}/api/DataSetModels`)
             .then(data => data.json())
-            .then(json => setDataSets(json.data))
+            .then(json => setDataSets(json))
             .catch(err => {
                 console.log(err)
                 setDataSets(null)
-                // setDataSets([
-                //     {Name: 'Test Name 1', SequenceType: 'DNA', Id: '1'},
-                //     {Name: 'Test Name 2', SequenceType: 'RNA', Id: '2'},
-                //     {Name: 'Jeanne Manalo', SequenceType: 'Grad Student', Id: '1992'}
-                // ])
             })
     }, [])
 

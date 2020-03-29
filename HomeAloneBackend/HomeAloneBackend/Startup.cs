@@ -22,13 +22,15 @@ namespace HomeAloneBackend
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
+            services.AddCors();
 
             services.AddMyDbContext<AnalyzerDbContext>(Configuration);
 
             services.AddHostedService<QueuedHostingService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddTransient<IFileUploadService, FileUploadService>();
+            services.AddTransient<IFastaFileParser, FastaFileParser>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -42,7 +44,8 @@ namespace HomeAloneBackend
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            // DM 03/28/2020 This is not ideal...
+            app.UseCors(builder => builder.WithOrigins("*").AllowAnyHeader());
 
             app.UseEndpoints(endpoints =>
             {

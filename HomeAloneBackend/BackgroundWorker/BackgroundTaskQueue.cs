@@ -7,19 +7,22 @@ namespace BackgroundWorker
 {
     public interface IBackgroundTaskQueue
     {
-        void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem);
-        Task<Func<CancellationToken, Task>> DequeueAsync(
-            CancellationToken cancellationToken);
+        void QueueBackgroundWorkItemAsync(Func<CancellationToken, Task> workItem);
+        Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken);
     }
 
     public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
     {
-        private ConcurrentQueue<Func<CancellationToken, Task>> _workItems =
-            new ConcurrentQueue<Func<CancellationToken, Task>>();
-        private SemaphoreSlim _signal = new SemaphoreSlim(0);
+        private readonly ConcurrentQueue<Func<CancellationToken, Task>> _workItems;
+        private readonly SemaphoreSlim _signal;
 
-        public void QueueBackgroundWorkItem(
-            Func<CancellationToken, Task> workItem)
+        public BackgroundTaskQueue()
+        {
+            _workItems = new ConcurrentQueue<Func<CancellationToken, Task>>();
+            _signal = new SemaphoreSlim(0);
+        }
+
+        public void QueueBackgroundWorkItemAsync(Func<CancellationToken, Task> workItem)
         {
             if (workItem == null)
             {
@@ -30,8 +33,7 @@ namespace BackgroundWorker
             _signal.Release();
         }
 
-        public async Task<Func<CancellationToken, Task>> DequeueAsync(
-            CancellationToken cancellationToken)
+        public async Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken)
         {
             await _signal.WaitAsync(cancellationToken);
             _workItems.TryDequeue(out var workItem);
