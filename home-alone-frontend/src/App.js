@@ -5,8 +5,6 @@ import Home from './components/Home'
 import SubmitForm from './components/SubmitForm'
 import AnalyzeForm from './components/AnalyzeForm'
 
-import './App.css';
-
 const App = () => {
   return (
     <BrowserRouter>
@@ -18,7 +16,7 @@ const App = () => {
           <Route path='/submit'>
             <SubmitForm/>
           </Route>
-          <Route path='/analyze'>
+          <Route path='/analyze/:id'>
             <AnalyzeForm/>
           </Route>
         </Switch>
