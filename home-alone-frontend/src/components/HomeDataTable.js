@@ -5,10 +5,23 @@ import { Link } from 'react-router-dom'
 import { Table } from 'react-bootstrap'
 
 const DataSetMapper = ({data}) => {
+    const sequenceTypeMapper = (type) => {
+        switch (type) {
+            case 0:
+                return 'DNA'
+            case 1:
+                return 'RNA'
+            case 2:
+                return 'Protein'
+            default:
+                return 'Data error...'
+        }
+    }
+
     return (
         <tr>
             <td>{data.name}</td>
-            <td>{data.sequenceType}</td>
+            <td>{sequenceTypeMapper(data.sequenceType)}</td>
             <td>
                 <Link to={`/analyze/${data.id}`}>
                     Analyze =>

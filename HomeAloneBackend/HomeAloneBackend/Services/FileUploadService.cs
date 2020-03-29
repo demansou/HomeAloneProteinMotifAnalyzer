@@ -1,85 +1,70 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 using HomeAloneBackend.Contexts;
 using HomeAloneBackend.Models;
-using BackgroundWorker;
 using HomeAloneBackend.Lib;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeAloneBackend.Services
 {
     public interface IFileUploadService
     {
-        void Save(IApiDataModel apiDataModel);
+        Task SaveAsync(IApiDataModel apiDataModel);
     }
 
     public sealed class FileUploadService : IFileUploadService
     {
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly IBackgroundTaskQueue _backgroundTaskQueue;
+        private readonly AnalyzerDbContext _analyzerDbContext;
         private readonly IFastaFileParser _fastaFileParser;
         private readonly ILogger<IFileUploadService> _logger;
 
         public FileUploadService(
-            IServiceScopeFactory serviceScopeFactory,
-            IBackgroundTaskQueue backgroundTaskQueue,
+            AnalyzerDbContext analyzerDbContext,
             IFastaFileParser fastaFileParser,
             ILogger<IFileUploadService> logger)
         {
-            _serviceScopeFactory = serviceScopeFactory;
-            _backgroundTaskQueue = backgroundTaskQueue;
+            _analyzerDbContext = analyzerDbContext;
             _fastaFileParser = fastaFileParser;
             _logger = logger;
         }
 
-        public void Save(IApiDataModel apiDataModel)
+        public async Task SaveAsync(IApiDataModel apiDataModel)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
+            var newDataSetModelId = await InsertDataSetModelAsync(apiDataModel);
 
-            var analyzerDbContext = scope.ServiceProvider.GetRequiredService<AnalyzerDbContext>();
+            await InsertDataFromModelAsync(apiDataModel, newDataSetModelId);
+        }
 
-            var newDataSetModelId = InsertDataSetModel(
-                apiDataModel,
-                analyzerDbContext);
-
-            InsertDataFromModel(
-                apiDataModel,
-                newDataSetModelId,
-                analyzerDbContext);
-            
-            int InsertDataSetModel(IApiDataModel m, AnalyzerDbContext c)
+        private async Task<int> InsertDataSetModelAsync(IApiDataModel m)
+        {
+            var newDataSetModel = new DataSetModel
             {
-                var newDataSetModel = new DataSetModel
+                Name = m.CollectionName,
+                SequenceType = m.SequenceType,
+            };
+
+            await _analyzerDbContext.DataSets.AddAsync(newDataSetModel);
+            await _analyzerDbContext.SaveChangesAsync();
+
+            return newDataSetModel.Id;
+        }
+
+        private async Task InsertDataFromModelAsync(IApiDataModel m, int id)
+        {
+            try
+            {
+                foreach (var newDataModel in _fastaFileParser.ParseFile(m.File))
                 {
-                    Name = m.CollectionName,
-                    SequenceType = m.SequenceType,
-                };
+                    newDataModel.DataSetId = id;
+                    await _analyzerDbContext.Data.AddAsync(newDataModel);
+                }
 
-                c.DataSets.Add(newDataSetModel);
-                c.SaveChanges();
-
-                return newDataSetModel.Id;
+                await _analyzerDbContext.SaveChangesAsync();
             }
-
-            void InsertDataFromModel(IApiDataModel m, int id, AnalyzerDbContext c)
+            catch (Exception ex)
             {
-                try
-                {
-                    foreach (var newDataModel in _fastaFileParser.ParseFile(m.File))
-                    {
-                        newDataModel.DataSetId = id;
-                        c.Data.Add(newDataModel);
-                    }
-
-                    c.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex.Message);
-                }
+                _logger.LogError(ex.Message);
             }
         }
     }

@@ -33,7 +33,7 @@ const AnalyzeForm = () => {
                     <AnalyzeFilter id={id}/>
                 </Col>
             </Row>
-            <Row>
+            <Row style={{ marginTop: 30 }}>
                 <Col>
                     <AnalyzeDisplay/>
                 </Col>
