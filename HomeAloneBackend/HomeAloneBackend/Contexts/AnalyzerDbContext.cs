@@ -8,7 +8,7 @@ namespace HomeAloneBackend.Contexts
     {
         public DbSet<DataSetModel> DataSets { get; set; }
 
-        public DbSet<DataModel> Data { get; }
+        public DbSet<DataModel> Data { get; set; }
 
         public AnalyzerDbContext(DbContextOptions<AnalyzerDbContext> options)
             : base(options)

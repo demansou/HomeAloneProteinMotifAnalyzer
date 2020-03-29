@@ -13,25 +13,25 @@ namespace HomeAloneBackend.Controllers
     [ApiController]
     public class DataSetModelsController : ControllerBase
     {
-        private readonly AnalyzerDbContext _context;
+        private readonly AnalyzerDbContext _analyzerDbContext;
 
-        public DataSetModelsController(AnalyzerDbContext context)
+        public DataSetModelsController(AnalyzerDbContext analyzerDbContext)
         {
-            _context = context;
+            _analyzerDbContext = analyzerDbContext;
         }
 
         // GET: api/DataSetModels
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DataSetModel>>> GetDataSets()
         {
-            return await _context.DataSets.ToListAsync();
+            return await _analyzerDbContext.DataSets.ToListAsync();
         }
 
         // GET: api/DataSetModels/5
         [HttpGet("{id}")]
         public async Task<ActionResult<DataSetModel>> GetDataSetModel(int id)
         {
-            var dataSetModel = await _context.DataSets.FindAsync(id);
+            var dataSetModel = await _analyzerDbContext.DataSets.FindAsync(id);
 
             if (dataSetModel == null)
             {
@@ -52,11 +52,11 @@ namespace HomeAloneBackend.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(dataSetModel).State = EntityState.Modified;
+            _analyzerDbContext.Entry(dataSetModel).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _analyzerDbContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -79,8 +79,8 @@ namespace HomeAloneBackend.Controllers
         [HttpPost]
         public async Task<ActionResult<DataSetModel>> PostDataSetModel(DataSetModel dataSetModel)
         {
-            _context.DataSets.Add(dataSetModel);
-            await _context.SaveChangesAsync();
+            _analyzerDbContext.DataSets.Add(dataSetModel);
+            await _analyzerDbContext.SaveChangesAsync();
 
             return CreatedAtAction("GetDataSetModel", new { id = dataSetModel.Id }, dataSetModel);
         }
@@ -89,21 +89,21 @@ namespace HomeAloneBackend.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<DataSetModel>> DeleteDataSetModel(int id)
         {
-            var dataSetModel = await _context.DataSets.FindAsync(id);
+            var dataSetModel = await _analyzerDbContext.DataSets.FindAsync(id);
             if (dataSetModel == null)
             {
                 return NotFound();
             }
 
-            _context.DataSets.Remove(dataSetModel);
-            await _context.SaveChangesAsync();
+            _analyzerDbContext.DataSets.Remove(dataSetModel);
+            await _analyzerDbContext.SaveChangesAsync();
 
             return dataSetModel;
         }
 
         private bool DataSetModelExists(int id)
         {
-            return _context.DataSets.Any(e => e.Id == id);
+            return _analyzerDbContext.DataSets.Any(e => e.Id == id);
         }
     }
 }
