@@ -2,6 +2,7 @@
 
 using HomeAloneBackend.Models;
 using HomeAloneBackend.Services;
+using System.Threading.Tasks;
 
 namespace HomeAloneBackend.Controllers
 {
@@ -18,7 +19,7 @@ namespace HomeAloneBackend.Controllers
 
         // POST: api/Submit
         [HttpPost]
-        public void Post(ApiDataModel formData)
+        public void Post([FromForm] ApiDataModel formData)
         {
             _fileUploadService.Save(formData);
         }
